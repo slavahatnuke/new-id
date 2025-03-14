@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate and Copy ID</title>
+  <style>
+      /* General Body Styles */
+      body {
+          font-family: 'Arial', sans-serif;
+          background-color: #f7f7f7; /* Light gray background */
+          color: #333333; /* Dark gray text color for better contrast */
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          text-align: center;
+      }
+
+      /* Container for the content */
+      #container {
+          background-color: #ffffff; /* White background for the container */
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          width: 400px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+      }
+
+      /* Input Field Style */
+      input[type="text"] {
+          width: 100%;
+          padding: 10px;
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          background-color: #f7f7f7;
+          color: #333;
+          margin-bottom: 15px;
+          text-align: center;
+      }
+
+      /* Button Styles */
+      button {
+          width: 100%;
+          padding: 12px;
+          font-size: 16px;
+          border: none;
+          background-color: #ccc;
+          color: #fff;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-bottom: 10px;
+          transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+          background-color: #888;
+      }
+
+      /* Feedback Message */
+      #feedback {
+          color: #888;
+          font-size: 14px;
+          margin-top: 15px;
+          height: 50px;
+      }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <input type="text" placeholder="...ID..." id="idInput" readonly>
+  <button onclick="generateFastId()">New Id</button>
+  <button onclick="generateUUIDX()">New UUIDx</button>
+  <button onclick="generateUUID()">New UUID</button>
+  <div id="feedback"></div>
+</div>
+
+<script>
+  // Function to generate random ID and copy it
+  async function copyToClipboard(value) {
+    await navigator.clipboard.writeText(value);
+  }
+
+  let putTimer = undefined;
+
+  async function put(randomId) {
+    if (putTimer) {
+      clearTimeout(putTimer);
+      putTimer = undefined;
+    }
+
+    const inputField = document.getElementById('idInput');
+    inputField.value = randomId;
+
+    // Copy the generated ID to the clipboard
+    inputField.select();
+    inputField.setSelectionRange(0, 99999);
+
+    await copyToClipboard(randomId);
+
+    const feedback = document.getElementById('feedback');
+    feedback.innerText = `Copied '${randomId}' to clipboard`;
+
+    putTimer = setTimeout(function() {
+      feedback.innerText = '';
+    }, 700);
+  }
+
+  async function generateFastId() {
+    // Generate a random ID using Math.random
+    const randomId = Math.random().toString(36).slice(2);
+    // Set the random ID as the value of the input field
+    await put(randomId);
+  }
+
+  async function generateUUID() {
+    // Generate a UUID using crypto API
+    const uuid = crypto.randomUUID(); // Available in modern browsers
+    await put(uuid);
+  }
+
+  async function generateUUIDX() {
+    const uuidx = crypto.randomUUID().replaceAll('-', '');
+    await put(uuidx);
+  }
+</script>
+
+</body>
+</html>
